@@ -1,5 +1,3 @@
-<!Doctype html>
-
 This is random shell. It's probably useless to you, but it demonstrates how you can make a bash-like cli in
 php (which is a really wierd thing to want to do...)
 
