@@ -1,0 +1,72 @@
+#!/usr/bin/php
+<?php
+  include "env.php";
+  include "io.php";
+  include "itpr.php";
+  include "tags.php";
+  include "fhandler.php";
+
+  function finfo($arg) {
+    $info = "Info for '" . $arg . "': {\n";
+    $info .= "\tFile Exists: " . (($r = file_exists($arg)) ? "TRUE" : "FALSE") . ($r ? "," : "") . "\n";
+    $info .= $r ? "\tMime Type: " . mime_content_type($arg) . "\n}\n": "}\n";
+    IO::out($info);
+  }
+
+  function iopen($arg) {
+    File::open($arg);
+  }
+
+  function addMime($arg) {
+    $a = explode(":", $arg);
+    File::addMime(trim($a{0}), trim($a{1}));
+  }
+
+  function chain($arg) {
+    IO::out(`$arg`);
+  }
+
+  function iecho($arg) {
+    IO::outLn($arg);
+  }
+
+  function addTag($arg) {
+    $a = explode(",", $arg);
+    $b = $a{1};
+    $a = $a{0};
+
+    TAGS::addTag($a, $b);
+  }
+
+  function debug() {
+    TAGS::debug();
+  }
+
+  function go($arg) {
+    $arg();
+  }
+
+  ITPR::registerVerb("chain");
+  ITPR::registerVerb("echo", "iecho");
+  ITPR::registerVerb("tag", "addTag");
+  ITPR::registerVerb("debug", "debug");
+  ITPR::registerVerb("file", "finfo");
+  ITPR::registerVerb("open", "iopen");
+  ITPR::registerVerb("mime", "addMime");
+  ITPR::registerVerb("help", "ITPR::verbDigest");
+  ITPR::registerVerb("go", "go");
+
+  IO::reg_ctrl_seq("\t", "ITPR::verbDigest");
+
+  IO::outLn("Welcome to random!");
+  IO::setPrompt("random");
+
+  $cur_cmd = NULL;
+
+  while (true) {
+    if (!(ITPR::think($cur_cmd = IO::aprompt()))) {
+      IO::outLn("\"" . $cur_cmd . "\" is not a known command.");
+    }
+  }
+
+?>
